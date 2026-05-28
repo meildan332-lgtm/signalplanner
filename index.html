@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <link rel="icon" href="https://i.namu.wiki/i/TJgdKNl8C9pH3EUWbPBNXf8x8nqSfvHC6s7RFIrJpa1q5ZfF5C-ZSZAfVwkc2Cg7fEL3g-_BDyVu0_jnM64v3tzxwaxRpbY0mGi5IqnLninFRLDRo8saqkm7t6dCsymt77vsMQpCs8--nkcxqxADOg.webp">
+    
+    <meta property="og:title" content="SIGNAL">
+    <meta property="og:description" content="시그널 멤버 일정">
+    <meta property="og:image" content="https://i.namu.wiki/i/TJgdKNl8C9pH3EUWbPBNXf8x8nqSfvHC6s7RFIrJpa1q5ZfF5C-ZSZAfVwkc2Cg7fEL3g-_BDyVu0_jnM64v3tzxwaxRpbY0mGi5IqnLninFRLDRo8saqkm7t6dCsymt77vsMQpCs8--nkcxqxADOg.webp">
+
+    <title>시그널(SIGNAL) 일정 관리</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/uicons-solid-rounded/css/uicons-solid-rounded.css'>
+    <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/uicons-regular-rounded/css/uicons-regular-rounded.css'>
+    <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/uicons-bold-rounded/css/uicons-bold-rounded.css'>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-[#ffdddd] pt-24 overflow-x-hidden">
+
+    <header class="fixed top-0 left-0 w-full h-[70px] bg-white shadow-md z-[1000] flex items-center">
+        <div class="flex justify-between items-center w-[1795px] mx-auto px-4">
+            <div class="flex gap-2">
+                <button class="font-paperozi px-5 py-2.5 bg-transparent border-2 border-transparent text-[#5D4037] font-bold rounded-lg hover:border-[#FF5252] hover:text-[#FF5252] transition-all duration-200 flex items-center justify-center" onclick="changeTab('홈')">
+                    <i class="fi fi-rr-home text-2xl"></i>
+                </button>
+                
+                <button class="font-paperozi px-5 py-2.5 text-lg bg-transparent border-2 border-transparent text-[#5D4037] font-bold rounded-lg hover:border-[#FBC02D] hover:text-[#FBC02D] transition-all duration-200" onclick="changeTab('달타')">달타</button>
+                <button class="font-paperozi px-5 py-2.5 text-lg bg-transparent border-2 border-transparent text-[#5D4037] font-bold rounded-lg hover:border-[#F06292] hover:text-[#F06292] transition-all duration-200" onclick="changeTab('서피카')">서피카</button>
+                <button class="font-paperozi px-5 py-2.5 text-lg bg-transparent border-2 border-transparent text-[#5D4037] font-bold rounded-lg hover:border-[#1E88E5] hover:text-[#1E88E5] transition-all duration-200" onclick="changeTab('다룽')">다룽</button>
+                <button class="font-paperozi px-5 py-2.5 text-lg bg-transparent border-2 border-transparent text-[#5D4037] font-bold rounded-lg hover:border-[#D81B60] hover:text-[#D81B60] transition-all duration-200" onclick="changeTab('최또')">최또</button>
+                <button class="font-paperozi px-5 py-2.5 text-lg bg-transparent border-2 border-transparent text-[#5D4037] font-bold rounded-lg hover:border-[#F57C00] hover:text-[#F57C00] transition-all duration-200" onclick="changeTab('카나시')">카나시</button>
+            </div>
+            
+            <button id="adminMenuBtn" class="font-paperozi bg-transparent border-2 border-transparent px-6 py-2 rounded-lg font-bold text-lg text-[#5D4037] hover:border-[#5D4037] transition-all duration-200" onclick="handleAdminClick()">
+                로그인
+            </button>
+        </div>
+    </header>
+
+    <div class="planner-container relative">
+        <div id="mainContent" class="w-full"></div>
+    </div>
+
+    <div id="passwordModal" class="hidden fixed inset-0 bg-black/50 items-center justify-center z-[3000]">
+        <div class="modal-content bg-white p-6 rounded-xl w-80 shadow-xl border-4 border-[#5D4037]">
+            <h2 class="text-xl font-bold mb-4 text-center text-[#5D4037]">관리자 인증</h2>
+            <input type="password" id="pwInput" class="w-full border-2 border-[#5D4037] rounded p-2 mb-4 text-center text-lg tracking-widest" placeholder="비밀번호 입력" onkeypress="if(event.key==='Enter') checkPassword()">
+            <div class="flex gap-2">
+                <button class="flex-1 bg-gray-200 text-gray-700 py-2 rounded font-bold hover:bg-gray-300 transition cursor-pointer" onclick="closePasswordModal()">취소</button>
+                <button class="flex-1 bg-[#5D4037] text-white py-2 rounded font-bold hover:brightness-110 transition cursor-pointer" onclick="checkPassword()">확인</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="logoutModal" class="hidden fixed inset-0 bg-black/50 items-center justify-center z-[3000]">
+        <div class="modal-content bg-white p-6 rounded-xl w-80 shadow-xl border-4 border-[#5D4037]">
+            <h2 class="text-xl font-bold mb-4 text-center text-[#5D4037]">로그아웃 하시겠습니까?</h2>
+            <div class="flex gap-2 mt-6">
+                <button class="flex-1 bg-gray-200 text-gray-700 py-2 rounded font-bold hover:bg-gray-300 transition cursor-pointer" onclick="closeLogoutModal()">취소</button>
+                <button class="flex-1 bg-red-500 text-white py-2 rounded font-bold hover:bg-red-600 transition cursor-pointer" onclick="logoutAdmin()">로그아웃</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="scheduleModal" class="hidden fixed inset-0 bg-black/50 items-center justify-center z-[3000]">
+        <div class="modal-content bg-[#FFFDF5] p-6 rounded-2xl w-[500px] shadow-xl max-h-[90vh] flex flex-col relative border-4 border-[#5D4037]">
+            <button class="absolute top-4 right-4 text-2xl text-[#5D4037] hover:scale-110 transition cursor-pointer" onclick="closeScheduleModal()"><i class="fi fi-br-cross"></i></button>
+            <div class="text-2xl font-bold text-center text-[#5D4037] mb-6" id="scheduleModalDate"></div>
+            <div class="flex gap-4 mb-4">
+                <div class="flex-1"><input type="radio" id="typeBangon" name="globalSchType" value="뱅온" class="type-radio" checked onchange="toggleFields('scheduleModal', 'globalSchType')"><label for="typeBangon" class="type-label bangon">뱅온</label></div>
+                <div class="flex-1"><input type="radio" id="typeHubang" name="globalSchType" value="휴방" class="type-radio" onchange="toggleFields('scheduleModal', 'globalSchType')"><label for="typeHubang" class="type-label hubang">휴방</label></div>
+            </div>
+            <div id="scheduleInputsContainer" class="flex-1 overflow-y-auto pr-2 flex flex-col gap-3 modal-scroll mb-4"></div>
+            <button class="w-full py-3 border-2 border-dashed border-[#5D4037] text-[#5D4037] font-bold rounded-xl hover:bg-[#5D4037] hover:text-white transition mb-4 cursor-pointer" onclick="addScheduleInputBlock()">+ 일정 추가</button>
+            <button class="w-full bg-[#5D4037] text-white py-4 rounded-xl font-bold text-xl hover:brightness-110 transition shadow-md cursor-pointer" onclick="saveSchedule()">저장하기</button>
+        </div>
+    </div>
+
+    <div id="editScheduleModal" class="hidden fixed inset-0 bg-black/50 items-center justify-center z-[3000]">
+        <div class="modal-content bg-[#FFFDF5] p-6 rounded-2xl w-[500px] shadow-xl relative border-4 border-[#5D4037]">
+            <button class="absolute top-4 right-4 text-2xl text-[#5D4037] hover:scale-110 transition cursor-pointer" onclick="closeEditModal()"><i class="fi fi-br-cross"></i></button>
+            <div class="text-2xl font-bold text-center text-[#5D4037] mb-6">일정 수정</div>
+            <div class="flex gap-4 mb-4">
+                <div class="flex-1"><input type="radio" id="editTypeBangon" name="editGlobalSchType" value="뱅온" class="type-radio" checked onchange="toggleFields('editScheduleModal', 'editGlobalSchType')"><label for="editTypeBangon" class="type-label bangon">뱅온</label></div>
+                <div class="flex-1"><input type="radio" id="editTypeHubang" name="editGlobalSchType" value="휴방" class="type-radio" onchange="toggleFields('editScheduleModal', 'editGlobalSchType')"><label for="editTypeHubang" class="type-label hubang">휴방</label></div>
+            </div>
+            <div id="editContainer" class="mb-4"></div>
+            <button class="w-full bg-[#5D4037] text-white py-4 rounded-xl font-bold text-xl hover:brightness-110 transition shadow-md cursor-pointer" onclick="saveEditedSchedule()">수정 완료</button>
+        </div>
+    </div>
+
+    <div id="scheduleDetailModal" class="hidden fixed inset-0 bg-black/50 items-center justify-center z-[3000]" onclick="closeDetailModal()">
+        <div class="modal-content bg-[#FFFDF5] p-8 rounded-3xl w-[400px] shadow-2xl relative border-4 border-[#5D4037] flex flex-col items-center" onclick="event.stopPropagation()">
+            <div class="w-full flex justify-end mb-2"><button class="text-3xl text-[#5D4037] hover:scale-110 transition modal-arrow-btn cursor-pointer" onclick="closeDetailModal()"><i class="fi fi-rr-cross-small"></i></button></div>
+            <div id="detailDesc" class="w-full"></div>
+            <button class="modal-btn w-full bg-[#5D4037] text-white py-4 rounded-2xl font-bold text-[20px] mt-6 cursor-pointer" onclick="closeDetailModal()">닫기</button>
+        </div>
+    </div>
+
+    <div id="monthPickerModal" class="hidden fixed inset-0 bg-black/50 items-center justify-center z-[3000]">
+        <div class="modal-content bg-[#FFFDF5] p-6 rounded-2xl w-[350px] shadow-xl border-4 border-[#5D4037]">
+            <div class="flex justify-between items-center mb-6 px-4">
+                <button class="text-2xl text-[#5D4037] hover:scale-110 transition modal-arrow-btn cursor-pointer" onclick="changePickerYear(-1)"><i class="fi fi-rr-angle-left"></i></button>
+                <div class="text-2xl font-bold text-[#5D4037]" id="pickerYearText"></div>
+                <button class="text-2xl text-[#5D4037] hover:scale-110 transition modal-arrow-btn cursor-pointer" onclick="changePickerYear(1)"><i class="fi fi-rr-angle-right"></i></button>
+            </div>
+            <div class="grid grid-cols-4 gap-3 mb-6" id="pickerMonthGrid"></div>
+            <button class="w-full bg-gray-200 text-[#5D4037] py-3 rounded-xl font-bold text-lg hover:bg-gray-300 transition cursor-pointer" onclick="closeMonthPicker()">취소</button>
+        </div>
+    </div>
+
+    <div id="contextMenu" class="hidden fixed bg-white border-2 border-[#5D4037] rounded-lg shadow-xl z-[4000] w-32 flex-col overflow-hidden">
+        <button class="context-menu-btn text-[#5D4037] border-b border-gray-100 hover:bg-gray-100" onclick="editFromMenu()">수정하기</button>
+        <button class="context-menu-btn text-red-500 hover:bg-gray-100" onclick="deleteFromMenu()">삭제하기</button>
+    </div>
+
+    <div id="memoPanel" class="fixed top-0 right-0 w-[450px] h-full bg-[#FFFDF5] shadow-2xl z-[5000] transform translate-x-full transition-transform duration-300 ease-in-out border-l-4 border-[#5D4037] flex flex-col">
+        <div class="p-6 border-b-2 border-dashed border-[#5D4037] flex justify-between items-center bg-white">
+            <div class="text-2xl font-bold text-[#5D4037] font-paperozi flex items-center gap-2">
+                <i class="fi fi-rr-edit"></i> <span id="memoPanelTitle">메모장</span>
+            </div>
+            <button onclick="toggleMemoPanel()" class="text-4xl text-[#5D4037] hover:text-red-500 transition-colors cursor-pointer"><i class="fi fi-rr-cross-small"></i></button>
+        </div>
+        <div class="flex-1 p-6 flex flex-col">
+            <textarea id="memoTextarea" 
+                      class="flex-1 w-full border-2 border-[#5D4037] rounded-xl outline-none focus:border-[var(--theme-color)] text-[20px] resize-none font-paperozi"
+                      style="background-color: white; background-image: repeating-linear-gradient(transparent, transparent 35px, #E5E7EB 35px, #E5E7EB 36px); line-height: 36px; padding: 6px 20px 20px 20px; background-attachment: local;" 
+                      placeholder=""></textarea>
+        </div>
+    </div>
+
+    <script type="module" src="script.js"></script>
+</body>
+</html>
