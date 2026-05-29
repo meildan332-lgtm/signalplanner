@@ -73,19 +73,19 @@ const collectionMap = { '달타': 'daltaevent', '서피카': 'SEOPICAevent', '�
 const memoCollectionMap = { '달타': 'daltamemo', '서피카': 'seopicamemo', '다룽': 'drungmemo', '최또': 'choiagainmemo', '카나시': 'kanashimemo' };
 
 const members = [
-    { name: '달타', img: 'https://i.postimg.cc/28by98rm/7418691211bd4b5c5.png', link: 'https://www.sooplive.com/station/dalta20' },
-    { name: '서피카', img: 'https://i.postimg.cc/15nX75sm/4819691211c6caa92.png', link: '' },
-    { name: '다룽', img: 'https://i.postimg.cc/qMhqDM44/9959691211c22a854.png', link: '' },
-    { name: '최또', img: 'https://i.postimg.cc/vHgT2HbG/7217691211aa8e846.png', link: '' },
-    { name: '카나시', img: 'https://i.postimg.cc/Gh8tghd9/2661691211ca0e69c.png', link: '' }
+    { name: '달타', img: 'https://i.postimg.cc/y8VYYyZM/dalta-peusa.png', link: 'https://www.sooplive.com/station/dalta20' },
+    { name: '서피카', img: 'https://i.postimg.cc/7YrWFxGX/jemog-eul-iblyeoghaejuseyo-(1).png', link: '' },
+    { name: '다룽', img: 'https://i.postimg.cc/bNfB7zDm/jemog-eul-iblyeoghaejuseyo-(2).png', link: '' },
+    { name: '최또', img: 'https://i.postimg.cc/fTQrGwtB/jemog-eul-iblyeoghaejuseyo.png', link: '' },
+    { name: '카나시', img: 'https://i.postimg.cc/vZQHHtVC/kanasi-peusa.png', link: '' }
 ];
 
 const memberCardImages = {
-    '달타': { bangon: 'https://i.postimg.cc/DwwLVBJT/jemog-eul-iblyeoghaejuseyo-(4).png', hubang: 'https://i.postimg.cc/1zyhBVfy/jemog-eul-iblyeoghaejuseyo.png' },
-    '서피카': { bangon: 'https://i.postimg.cc/zGGKm0bX/jemog-eul-iblyeoghaejuseyo-(12).png', hubang: 'https://i.postimg.cc/fTbvczwg/jemog-eul-iblyeoghaejuseyo-(9).png' },
-    '다룽': { bangon: 'https://i.postimg.cc/y88cqvgs/jemog-eul-iblyeoghaejuseyo-(10).png', hubang: 'https://i.postimg.cc/nLnb29Cx/jemog-eul-iblyeoghaejuseyo-(3).png' },
-    '최또': { bangon: 'https://i.postimg.cc/4xxVCB7G/jemog-eul-iblyeoghaejuseyo-(11).png', hubang: 'https://i.postimg.cc/d0JP6ZLK/jemog-eul-iblyeoghaejuseyo-(1).png' },
-    '카나시': { bangon: 'https://i.postimg.cc/K88BXJkF/jemog-eul-iblyeoghaejuseyo-(5).png', hubang: 'https://i.postimg.cc/R0v5dJNB/jemog-eul-iblyeoghaejuseyo-(2).png' }
+    '달타': { bangon: 'https://i.postimg.cc/P5N94Lsc/jemog-eul-iblyeoghaejuseyo.png', hubang: 'https://i.postimg.cc/br7DBDVt/jemog-eul-iblyeoghaejuseyo-(5).png' },
+    '서피카': { bangon: 'https://i.postimg.cc/0yrFf6RF/jemog-eul-iblyeoghaejuseyo-(2).png', hubang: 'https://i.postimg.cc/T1zL4LNQ/jemog-eul-iblyeoghaejuseyo-(9).png' },
+    '다룽': { bangon: 'https://i.postimg.cc/zG36jLZc/jemog-eul-iblyeoghaejuseyo-(3).png', hubang: 'https://i.postimg.cc/MHCMFM3M/jemog-eul-iblyeoghaejuseyo-(8).png' },
+    '최또': { bangon: 'https://i.postimg.cc/FH18Zf56/jemog-eul-iblyeoghaejuseyo-(1).png', hubang: 'https://i.postimg.cc/SRB2v21z/jemog-eul-iblyeoghaejuseyo-(6).png' },
+    '카나시': { bangon: 'https://i.postimg.cc/8z33n1Nt/jemog-eul-iblyeoghaejuseyo-(4).png', hubang: 'https://i.postimg.cc/vTJgNg29/jemog-eul-iblyeoghaejuseyo-(7).png' }
 };
 
 const defaultMemberLinks = {
@@ -200,12 +200,18 @@ function checkAndShowPopup(today) {
 function showUpPopup() {
     const list = document.getElementById('upPopupList');
     if(!list) return;
-    list.innerHTML = upLinksList.map(up => `
-        <div class="border-[2px] rounded-xl p-4 mb-3 cursor-pointer hover:bg-gray-50" style="border-color:${themeColors[up.member] || '#5D4037'}" onclick="window.open('${up.url}', '_blank')">
-            <div class="font-bold text-lg mb-1">${up.title}</div>
-            <div class="text-xs text-gray-500">${up.deadline ? '마감: ' + up.deadline : '마감일 없음'}</div>
+    list.innerHTML = upLinksList.map(up => {
+        const theme = themeColors[up.member] || '#5D4037';
+        return `
+        <div class="border-[2px] rounded-xl p-4 mb-3 cursor-pointer hover:bg-gray-50 flex flex-col gap-1" style="border-color:${theme}" onclick="window.open('${up.url}', '_blank')">
+            <div class="font-bold text-[17px] mb-2 text-gray-800 break-words leading-snug">${up.title}</div>
+            <div class="flex justify-between items-end">
+                <span class="text-[12px] font-bold text-white px-2.5 py-1 rounded-md" style="background-color: ${theme}">${up.member}</span>
+                <span class="text-[12px] font-bold text-gray-500 bg-gray-100 px-2 py-1 rounded">${up.deadline ? '마감: ' + up.deadline : '마감일 없음'}</span>
+            </div>
         </div>
-    `).join('');
+        `;
+    }).join('');
     document.getElementById('upPopupOverlay').classList.remove('hidden');
 }
 
@@ -745,17 +751,14 @@ function renderMobileDatePicker() {
     grid.innerHTML = html;
 }
 
-// 폰트 크기 및 카드 유형 폰트색 일치 반영
 function buildScheduleCardHtml(sch, isMobileCard = false) {
     const color = sch.globalType === '휴방' ? '#9CA3AF' : 'var(--theme-color)';
     const bgColor = sch.globalType === '휴방' ? '#F9FAFB' : '#FFF5F5';
     const formattedTime = formatTime12(sch.time) || ''; const broadType = sch.broadType || '';
 
-    // 테마색 및 합방 색상 처리 (카드와 모달 통일)
     const cardThemeColor = themeColors[sch.tabOrMember] || '#5D4037';
-    const cardBroadColor = broadType === '합방' ? '#d4ebce' : cardThemeColor;
+    const cardBroadColor = broadType === '합방' ? '#1b3420' : cardThemeColor;
 
-    // 기존 대비 폰트 사이즈 추가 축소 (약 5px)
     const timeSize = isMobileCard ? '11px' : '12px'; 
     const titleSize = isMobileCard ? '12px' : '18px';
 
@@ -768,7 +771,7 @@ function buildScheduleCardHtml(sch, isMobileCard = false) {
                 <span style="color: ${sch.globalType === '휴방' ? 'inherit' : cardBroadColor};">${broadType}</span><span>${formattedTime}</span>
              </div>
              <div class="flex-1 flex items-center justify-center w-full px-1 py-1">
-                <span class="schedule-text font-OmuDaye leading-snug" style="font-size: ${titleSize} !important;">${sch.title}</span>
+                <span class="schedule-text font-paperozi leading-snug" style="font-size: ${titleSize} !important;">${sch.title}</span>
             </div>
         </div>
     `;
@@ -1184,7 +1187,6 @@ function editFromMenu() {
 }
 function closeEditModal() { document.getElementById('editScheduleModal').classList.replace('flex', 'hidden'); contextTargetId = null; }
 
-// 뱃지 디자인(시간, 유형) 통일 반영
 function renderSchedulesInModal(schedules) {
     const modal = document.getElementById('scheduleDetailModal'); const modalContent = modal.querySelector('.modal-content');
     modalContent.style.backgroundColor = '#FFFDF5'; modalContent.style.padding = '12px 20px 20px 20px';
@@ -1196,7 +1198,7 @@ function renderSchedulesInModal(schedules) {
         
         let themeColor = themeColors[sch.tabOrMember] || '#5D4037';
         let isHabBang = broadText === '합방';
-        let broadColor = isHabBang ? '#d4ebce' : themeColor;
+        let broadColor = isHabBang ? '#1b3420' : themeColor;
         
         let badgeHtml = sch.globalType === '휴방' ? '' : 
             `<div class="flex gap-2 justify-center">
@@ -1204,7 +1206,7 @@ function renderSchedulesInModal(schedules) {
                 <span class="px-4 py-1.5 bg-white text-[13px] font-bold rounded-full shadow-sm border-2" style="color: ${broadColor}; border-color: ${broadColor};">${broadText}</span>
             </div>`;
             
-        htmlContent += `<div class="flex flex-col w-full items-center"><div class="flex flex-col items-center gap-2 mb-4 w-full"><div class="text-[28px] font-bold text-[#000] text-center leading-tight break-keep font-omudaye">${sch.title}</div>${badgeHtml}</div><div class="flex flex-col gap-5 w-full pretendard px-3">${memText ? `<div class="flex flex-col"><div class="text-[13px] text-gray-400 font-bold mb-1">멤버</div><div class="text-[17px] text-[#5D4037] font-bold">${memText}</div></div>` : ''}${detailText ? `<div class="flex flex-col"><div class="text-[13px] text-gray-400 font-bold mb-1">상세</div><div class="text-[15px] text-[#5D4037] font-medium leading-relaxed whitespace-pre-wrap">${detailText}</div></div>` : ''}</div></div>`;
+        htmlContent += `<div class="flex flex-col w-full items-center"><div class="flex flex-col items-center gap-2 mb-4 w-full"><div class="text-[28px] font-bold text-[#000] text-center leading-tight break-keep font-paperozi">${sch.title}</div>${badgeHtml}</div><div class="flex flex-col gap-5 w-full pretendard px-3">${memText ? `<div class="flex flex-col"><div class="text-[13px] text-gray-400 font-bold mb-1">멤버</div><div class="text-[17px] text-[#5D4037] font-bold">${memText}</div></div>` : ''}${detailText ? `<div class="flex flex-col"><div class="text-[13px] text-gray-400 font-bold mb-1">상세</div><div class="text-[15px] text-[#5D4037] font-medium leading-relaxed whitespace-pre-wrap">${detailText}</div></div>` : ''}</div></div>`;
         if (index < schedules.length - 1) htmlContent += `<div class="w-full border-b-2 border-dashed border-[#5D4037] opacity-20 my-8"></div>`;
     });
     htmlContent += '</div>';
