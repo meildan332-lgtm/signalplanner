@@ -106,7 +106,7 @@ const adminAccounts = {
     'real_email4@naver.com': { name: '최또', img: 'https://stimg.sooplive.com/LOGO/ch/choiagain/choiagain.jpg' },
     'real_email5@naver.com': { name: '카나시', img: 'https://stimg.sooplive.com/LOGO/kj/kjhh0029/kjhh0029.jpg' },
     'rnskrns@naver.com': { name: '관리자', img: 'https://via.placeholder.com/40' },
-    'jkolpc@naver.com': { name: '관리자', img: 'https://via.placeholder.com/40' } // <-- 추가된 계정
+    'hoonee4507@naver.com': { name: '관리자', img: 'https://via.placeholder.com/40' } // <-- 추가된 계정
 };
 
 const adminPasswords = {
