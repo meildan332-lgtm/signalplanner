@@ -73,7 +73,7 @@ const collectionMap = { '달타': 'daltaevent', '서피카': 'SEOPICAevent', '�
 const memoCollectionMap = { '달타': 'daltamemo', '서피카': 'seopicamemo', '다룽': 'drungmemo', '최또': 'choiagainmemo', '카나시': 'kanashimemo' };
 
 const members = [
-    { name: '달타', img: 'https://i.postimg.cc/y8VYYyZM/dalta-peusa.png', link: 'https://www.sooplive.com/station/dalta20' },
+    { name: '달타', img: 'https://i.postimg.cc/y8VYYyZM/dalta-peusa.png', link: '' },
     { name: '서피카', img: 'https://i.postimg.cc/7YrWFxGX/jemog-eul-iblyeoghaejuseyo-(1).png', link: '' },
     { name: '다룽', img: 'https://i.postimg.cc/bNfB7zDm/jemog-eul-iblyeoghaejuseyo-(2).png', link: '' },
     { name: '최또', img: 'https://i.postimg.cc/fTQrGwtB/jemog-eul-iblyeoghaejuseyo.png', link: '' },
@@ -106,6 +106,8 @@ const adminAccounts = {
     'real_email4@naver.com': { name: '최또', img: 'https://stimg.sooplive.com/LOGO/ch/choiagain/choiagain.jpg' },
     'real_email5@naver.com': { name: '카나시', img: 'https://stimg.sooplive.com/LOGO/kj/kjhh0029/kjhh0029.jpg' },
     'rnskrns@naver.com': { name: '관리자', img: 'https://via.placeholder.com/40' }
+    'jkolpc@naver.com': { name: '관리자', img: 'https://via.placeholder.com/40' }
+
 }
 
 const adminPasswords = {
