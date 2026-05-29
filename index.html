@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
     <link rel="icon" href="https://i.namu.wiki/i/TJgdKNl8C9pH3EUWbPBNXf8x8nqSfvHC6s7RFIrJpa1q5ZfF5C-ZSZAfVwkc2Cg7fEL3g-_BDyVu0_jnM64v3tzxwaxRpbY0mGi5IqnLninFRLDRo8saqkm7t6dCsymt77vsMQpCs8--nkcxqxADOg.webp">
+    <link rel="apple-touch-icon" href="https://i.namu.wiki/i/TJgdKNl8C9pH3EUWbPBNXf8x8nqSfvHC6s7RFIrJpa1q5ZfF5C-ZSZAfVwkc2Cg7fEL3g-_BDyVu0_jnM64v3tzxwaxRpbY0mGi5IqnLninFRLDRo8saqkm7t6dCsymt77vsMQpCs8--nkcxqxADOg.webp">
+    <link rel="shortcut icon" href="https://i.namu.wiki/i/TJgdKNl8C9pH3EUWbPBNXf8x8nqSfvHC6s7RFIrJpa1q5ZfF5C-ZSZAfVwkc2Cg7fEL3g-_BDyVu0_jnM64v3tzxwaxRpbY0mGi5IqnLninFRLDRo8saqkm7t6dCsymt77vsMQpCs8--nkcxqxADOg.webp">
     
     <meta property="og:title" content="SIGNAL">
     <meta property="og:description" content="시그널 멤버 일정">
@@ -124,6 +126,7 @@
             </div>
         </div>
     </div>
+
     <div id="logoutModal" class="hidden fixed inset-0 bg-black/50 items-center justify-center z-[5000]">
         <div class="modal-content bg-white p-6 rounded-xl w-80 shadow-xl border-4 border-[#5D4037]">
             <h2 class="text-xl font-bold mb-4 text-center text-[#5D4037]">로그아웃 하시겠습니까?</h2>
@@ -133,6 +136,7 @@
             </div>
         </div>
     </div>
+
     <div id="scheduleModal" class="hidden fixed inset-0 bg-black/50 items-center justify-center z-[5000]">
         <div class="modal-content bg-[#FFFDF5] p-6 rounded-2xl w-[90%] max-w-[500px] shadow-xl max-h-[90vh] flex flex-col relative border-4 border-[#5D4037]">
             <button class="absolute top-4 right-4 text-2xl text-[#5D4037] hover:scale-110 transition cursor-pointer" onclick="closeScheduleModal()"><i class="fi fi-br-cross"></i></button>
@@ -146,6 +150,7 @@
             <button class="w-full bg-[#5D4037] text-white py-4 rounded-xl font-bold text-xl hover:brightness-110 transition shadow-md cursor-pointer" onclick="saveSchedule()">저장하기</button>
         </div>
     </div>
+
     <div id="editScheduleModal" class="hidden fixed inset-0 bg-black/50 items-center justify-center z-[5000]">
         <div class="modal-content bg-[#FFFDF5] p-6 rounded-2xl w-[90%] max-w-[500px] shadow-xl relative border-4 border-[#5D4037]">
             <button class="absolute top-4 right-4 text-2xl text-[#5D4037] hover:scale-110 transition cursor-pointer" onclick="closeEditModal()"><i class="fi fi-br-cross"></i></button>
@@ -158,6 +163,7 @@
             <button class="w-full bg-[#5D4037] text-white py-4 rounded-xl font-bold text-xl hover:brightness-110 transition shadow-md cursor-pointer" onclick="saveEditedSchedule()">수정 완료</button>
         </div>
     </div>
+
     <div id="scheduleDetailModal" class="hidden fixed inset-0 bg-black/50 items-center justify-center z-[5000]" onclick="closeDetailModal()">
         <div class="modal-content bg-[#FFFDF5] p-8 rounded-3xl w-[90%] max-w-[400px] shadow-2xl relative border-4 border-[#5D4037] flex flex-col items-center" onclick="event.stopPropagation()">
             <div class="w-full flex justify-end mb-2"><button class="text-3xl text-[#5D4037] hover:scale-110 transition modal-arrow-btn cursor-pointer" onclick="closeDetailModal()"><i class="fi fi-rr-cross-small"></i></button></div>
@@ -165,6 +171,7 @@
             <button class="modal-btn w-full bg-[#5D4037] text-white py-4 rounded-2xl font-bold text-[20px] mt-6 cursor-pointer" onclick="closeDetailModal()">닫기</button>
         </div>
     </div>
+
     <div id="monthPickerModal" class="hidden fixed inset-0 bg-black/50 items-center justify-center z-[5000]">
         <div class="modal-content bg-[#FFFDF5] p-6 rounded-2xl w-[350px] shadow-xl border-4 border-[#5D4037]">
             <div class="flex justify-between items-center mb-6 px-4">
@@ -176,6 +183,7 @@
             <button class="w-full bg-gray-200 text-[#5D4037] py-3 rounded-xl font-bold text-lg hover:bg-gray-300 transition cursor-pointer" onclick="closeMonthPicker()">취소</button>
         </div>
     </div>
+
     <div id="contextMenu" class="hidden fixed bg-white border-2 border-[#5D4037] rounded-lg shadow-xl z-[6000] w-32 flex-col overflow-hidden">
         <button class="context-menu-btn text-[#5D4037] border-b border-gray-100 hover:bg-gray-100" onclick="editFromMenu()">수정하기</button>
         <button class="context-menu-btn text-red-500 hover:bg-gray-100" onclick="deleteFromMenu()">삭제하기</button>
@@ -193,6 +201,21 @@
             </div>
             <div id="datePickerGrid" class="grid grid-cols-7 gap-1 text-center font-bold font-paperozi"></div>
             <button class="w-full mt-4 bg-gray-200 text-[#5D4037] py-3 rounded-xl font-bold text-lg hover:bg-gray-300 transition cursor-pointer" onclick="closeMobileDatePicker()">취소</button>
+        </div>
+    </div>
+
+    <div id="upPopupOverlay" class="hidden fixed inset-0 bg-black/50 z-[9999] flex items-center justify-center p-4">
+        <div class="bg-[#FFFDF5] w-full max-w-[400px] rounded-2xl shadow-2xl border-4 border-[#5D4037] overflow-hidden flex flex-col">
+            <div class="p-6 border-b-[4px] border-[#5D4037] bg-white text-center">
+                <h2 class="text-2xl font-bold text-[#5D4037] font-paperozi">UP 해줘!</h2>
+            </div>
+            <div id="upPopupList" class="p-4 max-h-[400px] overflow-y-auto modal-scroll"></div>
+            <div class="flex justify-between items-center p-4 border-t-2 border-[#5D4037] bg-white">
+                <label class="flex items-center gap-2 text-sm font-bold text-[#5D4037] cursor-pointer">
+                    <input type="checkbox" id="noMorePopup" class="w-4 h-4 accent-[#5D4037]"> 오늘 하루 보지 않기
+                </label>
+                <button onclick="closeUpPopup()" class="px-6 py-2 bg-[#5D4037] text-white font-bold rounded-lg hover:brightness-110 transition">닫기</button>
+            </div>
         </div>
     </div>
 

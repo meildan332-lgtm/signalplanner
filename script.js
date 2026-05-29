@@ -19,6 +19,8 @@ window.executeDesktopTabChange = executeDesktopTabChange; window.executeMobileTa
 window.changeHomeDate = changeHomeDate; window.changeIndividualWeek = changeIndividualWeek;
 window.openMobileDatePicker = openMobileDatePicker; window.closeMobileDatePicker = closeMobileDatePicker;
 window.changeDatePickerMonth = changeDatePickerMonth; window.selectMobileDate = selectMobileDate;
+window.closeUpPopup = closeUpPopup; window.saveMemo = saveMemo;
+window.moveLink = moveLink; window.editMemberLink = editMemberLink;
 
 // =========================================================================
 // Firebase 초기화 및 변수 선언
@@ -67,13 +69,8 @@ window.addEventListener('resize', () => {
 
 const themeColors = { '홈': '#FF5252', '달타': '#FBC02D', '서피카': '#F06292', '다룽': '#1E88E5', '최또': '#D81B60', '카나시': '#F57C00' };
 
-const collectionMap = {
-    '달타': 'daltaevent', '서피카': 'SEOPICAevent', '다룽': 'drungevent', '최또': 'choiagainevent', '카나시': 'kanashievent'
-};
-
-const memoCollectionMap = {
-    '달타': 'daltamemo', '서피카': 'seopicamemo', '다룽': 'drungmemo', '최또': 'choiagainmemo', '카나시': 'kanashimemo'
-};
+const collectionMap = { '달타': 'daltaevent', '서피카': 'SEOPICAevent', '다룽': 'drungevent', '최또': 'choiagainevent', '카나시': 'kanashievent' };
+const memoCollectionMap = { '달타': 'daltamemo', '서피카': 'seopicamemo', '다룽': 'drungmemo', '최또': 'choiagainmemo', '카나시': 'kanashimemo' };
 
 const members = [
     { name: '달타', img: 'https://i.postimg.cc/28by98rm/7418691211bd4b5c5.png', link: 'https://www.sooplive.com/station/dalta20' },
@@ -83,7 +80,6 @@ const members = [
     { name: '카나시', img: 'https://i.postimg.cc/Gh8tghd9/2661691211ca0e69c.png', link: '' }
 ];
 
-// 새로 업데이트된 뱅온/휴방 이미지 매핑
 const memberCardImages = {
     '달타': { bangon: 'https://i.postimg.cc/DwwLVBJT/jemog-eul-iblyeoghaejuseyo-(4).png', hubang: 'https://i.postimg.cc/1zyhBVfy/jemog-eul-iblyeoghaejuseyo.png' },
     '서피카': { bangon: 'https://i.postimg.cc/zGGKm0bX/jemog-eul-iblyeoghaejuseyo-(12).png', hubang: 'https://i.postimg.cc/fTbvczwg/jemog-eul-iblyeoghaejuseyo-(9).png' },
@@ -137,6 +133,8 @@ function initNaverLogin() {
                     if (adminAccounts[userEmail]) {
                         isAdmin = true;
                         loggedInUser = adminAccounts[userEmail];
+                        sessionStorage.setItem('isAdmin', 'true');
+                        sessionStorage.setItem('loggedInUser', JSON.stringify(loggedInUser));
                         updateLoginUI(loggedInUser);
                         closePasswordModal();
                     } else {
@@ -188,7 +186,36 @@ async function loadLinksFromFirebase() {
             dynamicLinks = dbLinks;
         }
         renderHeaderTabs();
+        checkAndShowPopup(todayYYYYMMDD);
     } catch(e) { console.error("링크 로드 실패:", e); }
+}
+
+function checkAndShowPopup(today) {
+    const lastClosed = localStorage.getItem('upPopupClosedDate');
+    if (lastClosed !== today && upLinksList.length > 0) {
+        showUpPopup();
+    }
+}
+
+function showUpPopup() {
+    const list = document.getElementById('upPopupList');
+    if(!list) return;
+    list.innerHTML = upLinksList.map(up => `
+        <div class="border-[2px] rounded-xl p-4 mb-3 cursor-pointer hover:bg-gray-50" style="border-color:${themeColors[up.member] || '#5D4037'}" onclick="window.open('${up.url}', '_blank')">
+            <div class="font-bold text-lg mb-1">${up.title}</div>
+            <div class="text-xs text-gray-500">${up.deadline ? '마감: ' + up.deadline : '마감일 없음'}</div>
+        </div>
+    `).join('');
+    document.getElementById('upPopupOverlay').classList.remove('hidden');
+}
+
+function closeUpPopup() {
+    if (document.getElementById('noMorePopup').checked) {
+        const now = new Date();
+        const kstTime = new Date(now.getTime() + (9 * 60 * 60 * 1000));
+        localStorage.setItem('upPopupClosedDate', kstTime.toISOString().split('T')[0]);
+    }
+    document.getElementById('upPopupOverlay').classList.add('hidden');
 }
 
 function renderHeaderTabs() {
@@ -197,7 +224,6 @@ function renderHeaderTabs() {
     const tabs = ['달타', '서피카', '다룽', '최또', '카나시'];
     const colors = { '달타': '#FBC02D', '서피카': '#F06292', '다룽': '#1E88E5', '최또': '#D81B60', '카나시': '#F57C00' };
 
-    // 데스크탑 렌더링
     if (desktopContainer) {
         let html = `
             <button class="font-paperozi px-5 py-2.5 bg-transparent border-2 border-transparent text-[#5D4037] font-bold rounded-lg hover:border-[#FF5252] hover:text-[#FF5252] transition-all duration-200 flex items-center justify-center" onclick="executeDesktopTabChange('홈')">
@@ -227,7 +253,6 @@ function renderHeaderTabs() {
         desktopContainer.innerHTML = html;
     }
 
-    // 모바일 하단 네비게이션
     if (mobileNav) {
         let mHtml = '';
         ['홈', ...tabs].forEach(tab => {
@@ -252,11 +277,7 @@ function renderHeaderTabs() {
 }
 
 function openMobileTabMenu(tab) {
-    if (tab === '홈') {
-        executeDesktopTabChange('홈');
-        return;
-    }
-    
+    if (tab === '홈') { executeDesktopTabChange('홈'); return; }
     const overlay = document.getElementById('mobileTabMenuOverlay');
     const container = document.getElementById('mobileTabMenuContainer');
     const color = themeColors[tab];
@@ -271,12 +292,10 @@ function openMobileTabMenu(tab) {
     links.forEach(l => {
         html += `<a href="${l.url}" target="_blank" class="w-full py-2.5 text-center bg-white rounded-lg font-bold text-[14px] shadow-sm border-[1.5px] active:brightness-95" style="border-color: ${color}; color: ${color}">${l.title}</a>`;
     });
-    
     html += `</div>`;
     container.innerHTML = html;
     
-    overlay.classList.remove('hidden');
-    overlay.classList.add('block');
+    overlay.classList.remove('hidden'); overlay.classList.add('block');
     requestAnimationFrame(() => {
         container.classList.remove('opacity-0', 'translate-y-4');
         container.classList.add('opacity-100', 'translate-y-0');
@@ -287,23 +306,13 @@ function closeMobileTabMenu() {
     const overlay = document.getElementById('mobileTabMenuOverlay');
     const container = document.getElementById('mobileTabMenuContainer');
     if(!container) return;
-    
     container.classList.remove('opacity-100', 'translate-y-0');
     container.classList.add('opacity-0', 'translate-y-4');
-    setTimeout(() => {
-        overlay.classList.add('hidden');
-        overlay.classList.remove('block');
-    }, 200);
+    setTimeout(() => { overlay.classList.add('hidden'); overlay.classList.remove('block'); }, 200);
 }
 
-function executeDesktopTabChange(tab) {
-    changeTab(tab);
-}
-
-function executeMobileTabChange(tab) {
-    closeMobileTabMenu();
-    changeTab(tab);
-}
+function executeDesktopTabChange(tab) { changeTab(tab); }
+function executeMobileTabChange(tab) { closeMobileTabMenu(); changeTab(tab); }
 
 function updateLoginUI(user) {
     const desktopContainer = document.getElementById('desktopAuthContainer');
@@ -322,7 +331,6 @@ function updateLoginUI(user) {
             </div>
         `;
     }
-
     const mobileContainer = document.getElementById('mobileAuthContainer');
     if(mobileContainer) {
         mobileContainer.innerHTML = `
@@ -342,11 +350,8 @@ function updateLoginUI(user) {
 function toggleProfileDropdown(menuId) {
     const menu = document.getElementById(menuId);
     if(menu) {
-        if(menu.classList.contains('hidden')) {
-            menu.classList.remove('hidden'); menu.classList.add('flex');
-        } else {
-            menu.classList.remove('flex'); menu.classList.add('hidden');
-        }
+        if(menu.classList.contains('hidden')) { menu.classList.remove('hidden'); menu.classList.add('flex'); } 
+        else { menu.classList.remove('flex'); menu.classList.add('hidden'); }
     }
 }
 
@@ -369,13 +374,19 @@ async function openLinkModal() {
     const container = document.getElementById('memberLinksContainer');
     container.innerHTML = '';
     const links = dynamicLinks[member] || [];
-    links.forEach(link => {
+    
+    links.forEach((link, index) => {
+        const isFirst = index === 0;
+        const isLast = index === links.length - 1;
         container.innerHTML += `
             <div class="flex justify-between items-center bg-white border-2 border-gray-200 p-3 rounded-lg shadow-sm">
                 <div class="font-bold text-[15px] text-[#5D4037] w-1/4 truncate">${link.title}</div>
-                <div class="flex items-center gap-3 w-3/4 justify-end">
-                    <a href="${link.url}" target="_blank" class="text-[13px] text-blue-500 underline truncate max-w-[200px]">${link.url}</a>
-                    <button onclick="deleteMemberLink('${member}', '${link.id}')" class="text-white bg-red-500 w-6 h-6 rounded flex items-center justify-center hover:bg-red-600 transition shrink-0"><i class="fi fi-br-cross-small"></i></button>
+                <div class="flex items-center gap-1 w-3/4 justify-end">
+                    <a href="${link.url}" target="_blank" class="text-[13px] text-blue-500 underline truncate max-w-[130px] mr-2">${link.url}</a>
+                    <button onclick="editMemberLink('${member}', '${link.id}')" class="text-white bg-blue-500 w-6 h-6 rounded flex items-center justify-center hover:bg-blue-600 transition shrink-0"><i class="fi fi-rr-edit text-[11px]"></i></button>
+                    <button onclick="moveLink('${member}', '${link.id}', -1)" class="p-1 text-gray-500 hover:text-[#5D4037] ${isFirst ? 'opacity-30 cursor-not-allowed' : ''}"><i class="fi fi-rr-angle-up text-lg"></i></button>
+                    <button onclick="moveLink('${member}', '${link.id}', 1)" class="p-1 text-gray-500 hover:text-[#5D4037] ${isLast ? 'opacity-30 cursor-not-allowed' : ''}"><i class="fi fi-rr-angle-down text-lg"></i></button>
+                    <button onclick="deleteMemberLink('${member}', '${link.id}')" class="text-white bg-red-500 w-6 h-6 rounded flex items-center justify-center hover:bg-red-600 transition shrink-0 ml-1"><i class="fi fi-br-cross-small"></i></button>
                 </div>
             </div>
         `;
@@ -389,13 +400,47 @@ async function openLinkModal() {
 }
 function closeLinkModal() { document.getElementById('linkModal').classList.replace('flex', 'hidden'); }
 
+async function moveLink(member, linkId, direction) {
+    const arr = dynamicLinks[member];
+    const idx = arr.findIndex(l => l.id === linkId);
+    if (idx < 0 || idx + direction < 0 || idx + direction >= arr.length) return;
+
+    const tempTime = arr[idx].timestamp;
+    arr[idx].timestamp = arr[idx + direction].timestamp;
+    arr[idx + direction].timestamp = tempTime;
+
+    try {
+        await updateDoc(doc(db, 'memberLinks', arr[idx].id), { timestamp: arr[idx].timestamp });
+        await updateDoc(doc(db, 'memberLinks', arr[idx + direction].id), { timestamp: arr[idx + direction].timestamp });
+        arr.sort((a,b) => a.timestamp - b.timestamp);
+        openLinkModal(); renderHeaderTabs();
+    } catch(e) { console.error(e); }
+}
+
+async function editMemberLink(member, linkId) {
+    const link = dynamicLinks[member].find(l => l.id === linkId);
+    if(!link) return;
+    const newTitle = prompt("수정할 메뉴 이름을 입력하세요.", link.title);
+    if(newTitle === null) return;
+    const newUrl = prompt("수정할 메뉴의 URL을 입력하세요.", link.url);
+    if(newUrl === null) return;
+
+    if(newTitle.trim() !== '' && newUrl.trim() !== '') {
+        try {
+            await updateDoc(doc(db, 'memberLinks', linkId), { title: newTitle.trim(), url: newUrl.trim() });
+            link.title = newTitle.trim();
+            link.url = newUrl.trim();
+            openLinkModal(); renderHeaderTabs();
+        } catch(e) { console.error(e); }
+    }
+}
+
 async function addMemberLink() {
     const title = document.getElementById('newLinkTitle').value.trim();
     const url = document.getElementById('newLinkUrl').value.trim();
     if(!title || !url) return alert('제목과 링크를 입력하세요.');
     const member = loggedInUser.name;
     const newLink = { member, title, url, timestamp: Date.now() };
-    
     try {
         const docRef = await addDoc(collection(db, 'memberLinks'), newLink);
         newLink.id = docRef.id;
@@ -405,6 +450,7 @@ async function addMemberLink() {
         openLinkModal(); renderHeaderTabs();
     } catch(e) { console.error(e); alert('추가 실패'); }
 }
+
 async function deleteMemberLink(member, linkId) {
     if(!confirm('삭제하시겠습니까?')) return;
     try {
@@ -419,7 +465,6 @@ async function addUpLink() {
     const url = document.getElementById('upUrl').value.trim();
     const deadline = document.getElementById('upDeadline').value;
     if(!title || !url) return alert('제목과 링크를 입력하세요.');
-    
     const member = loggedInUser.name;
     const newUp = { member, title, url, deadline, timestamp: Date.now() };
     try {
@@ -430,6 +475,7 @@ async function addUpLink() {
         if(sidePanelMode === 'UP') renderUpLinksPanel(); 
     } catch(e) { console.error(e); }
 }
+
 async function deleteUpLink(upId) {
     if(!confirm('이 업링크를 삭제하시겠습니까?')) return;
     try {
@@ -457,24 +503,17 @@ function closeSidePanel(instant = false) {
     if(isMobile) {
         panel.classList.remove('translate-y-0', 'opacity-100');
         panel.classList.add('translate-y-full', 'opacity-0');
-        if(mobileOverlay) {
-            mobileOverlay.classList.remove('block');
-            mobileOverlay.classList.add('hidden');
-        }
+        if(mobileOverlay) { mobileOverlay.classList.remove('block'); mobileOverlay.classList.add('hidden'); }
     } else {
         panel.classList.remove('h-[890px]', 'opacity-100');
         panel.classList.add('h-0', 'opacity-0');
     }
     
     if (instant) {
-        panel.classList.add('hidden');
-        panel.classList.remove('flex');
+        panel.classList.add('hidden'); panel.classList.remove('flex');
     } else {
         setTimeout(() => {
-            if (sidePanelMode === null) {
-                panel.classList.add('hidden');
-                panel.classList.remove('flex');
-            }
+            if (sidePanelMode === null) { panel.classList.add('hidden'); panel.classList.remove('flex'); }
         }, 300);
     }
 }
@@ -485,13 +524,8 @@ function openSidePanel(mode) {
     const panel = document.getElementById('sideExpansionPanel');
     const mobileOverlay = document.getElementById('mobilePanelOverlay');
     
-    panel.classList.remove('hidden'); 
-    panel.classList.add('flex');
-    
-    if(isMobile && mobileOverlay) {
-        mobileOverlay.classList.remove('hidden');
-        mobileOverlay.classList.add('block');
-    }
+    panel.classList.remove('hidden'); panel.classList.add('flex');
+    if(isMobile && mobileOverlay) { mobileOverlay.classList.remove('hidden'); mobileOverlay.classList.add('block'); }
     
     if (mode === 'MEMO') {
         const key = currentPage;
@@ -501,7 +535,10 @@ function openSidePanel(mode) {
                 <div class="text-[22px] font-bold text-[#5D4037] font-paperozi flex items-center gap-2">
                     <i class="fi fi-rr-edit"></i> ${currentPage} 메모장
                 </div>
-                <button onclick="closeSidePanel()" class="text-3xl text-[#5D4037] hover:text-red-500 cursor-pointer"><i class="fi fi-rr-cross-small"></i></button>
+                <div class="flex items-center gap-3">
+                    ${isAdmin ? `<button onclick="saveMemo()" class="px-4 py-1.5 bg-[#5D4037] text-white rounded-lg font-bold text-[15px] hover:brightness-110 shadow-sm transition">저장</button>` : ''}
+                    <button onclick="closeSidePanel()" class="text-3xl text-[#5D4037] hover:text-red-500 cursor-pointer"><i class="fi fi-rr-cross-small"></i></button>
+                </div>
             </div>
             <div class="flex-1 p-0 bg-[#FFFDF5] flex flex-col relative w-full overflow-hidden">
                 <textarea id="memoTextarea" 
@@ -516,11 +553,9 @@ function openSidePanel(mode) {
 
     requestAnimationFrame(() => {
         if(isMobile) {
-            panel.classList.remove('translate-y-full', 'opacity-0');
-            panel.classList.add('translate-y-0', 'opacity-100');
+            panel.classList.remove('translate-y-full', 'opacity-0'); panel.classList.add('translate-y-0', 'opacity-100');
         } else {
-            panel.classList.remove('h-0', 'opacity-0');
-            panel.classList.add('h-[890px]', 'opacity-100');
+            panel.classList.remove('h-0', 'opacity-0'); panel.classList.add('h-[890px]', 'opacity-100');
         }
     });
 }
@@ -556,9 +591,7 @@ function renderUpLinksPanel() {
         `;
     }).join('');
 
-    if(upLinksList.length === 0) {
-        upCardsHtml = `<div class="text-center text-gray-400 font-bold mt-16 text-lg">등록된 UP 링크가 없습니다.</div>`;
-    }
+    if(upLinksList.length === 0) { upCardsHtml = `<div class="text-center text-gray-400 font-bold mt-16 text-lg">등록된 UP 링크가 없습니다.</div>`; }
 
     panel.innerHTML = `
         <div class="p-6 border-b-[4px] border-[#5D4037] bg-white flex justify-between items-center shadow-sm z-10 shrink-0">
@@ -614,12 +647,16 @@ async function loadSchedulesFromFirebase() {
 }
 
 function changeTab(tabName) { 
-    currentPage = tabName; 
     if (sidePanelMode === 'MEMO') saveMemo(); 
+    currentPage = tabName; 
     
     if (!isMobile) {
-        sidePanelMode = (tabName === '홈') ? 'UP' : 'MEMO';
-        openSidePanel(sidePanelMode);
+        if(tabName === '홈') {
+            sidePanelMode = 'UP';
+            openSidePanel('UP');
+        } else {
+            closeSidePanel(true);
+        }
     } else {
         closeSidePanel(true);
     }
@@ -708,13 +745,19 @@ function renderMobileDatePicker() {
     grid.innerHTML = html;
 }
 
+// 폰트 크기 및 카드 유형 폰트색 일치 반영
 function buildScheduleCardHtml(sch, isMobileCard = false) {
     const color = sch.globalType === '휴방' ? '#9CA3AF' : 'var(--theme-color)';
     const bgColor = sch.globalType === '휴방' ? '#F9FAFB' : '#FFF5F5';
     const formattedTime = formatTime12(sch.time) || ''; const broadType = sch.broadType || '';
 
-    const timeSize = isMobileCard ? '16px' : '19px';
-    const titleSize = isMobileCard ? '18px' : '26px';
+    // 테마색 및 합방 색상 처리 (카드와 모달 통일)
+    const cardThemeColor = themeColors[sch.tabOrMember] || '#5D4037';
+    const cardBroadColor = broadType === '합방' ? '#d4ebce' : cardThemeColor;
+
+    // 기존 대비 폰트 사이즈 추가 축소 (약 5px)
+    const timeSize = isMobileCard ? '11px' : '12px'; 
+    const titleSize = isMobileCard ? '12px' : '18px';
 
     return `
         <div class="schedule-card ${sch.globalType === '휴방' ? 'hubang' : 'bangon'} h-full flex flex-col justify-center w-full" 
@@ -722,7 +765,7 @@ function buildScheduleCardHtml(sch, isMobileCard = false) {
              onclick="openDetailModal(event, '${sch.id}')" 
              oncontextmenu="showContextMenu(event, '${sch.id}')">
              <div class="w-full flex justify-between items-center px-1 mb-0.5" style="font-size: ${timeSize}; font-weight: 700;">
-                <span>${broadType}</span><span>${formattedTime}</span>
+                <span style="color: ${sch.globalType === '휴방' ? 'inherit' : cardBroadColor};">${broadType}</span><span>${formattedTime}</span>
              </div>
              <div class="flex-1 flex items-center justify-center w-full px-1 py-1">
                 <span class="schedule-text font-OmuDaye leading-snug" style="font-size: ${titleSize} !important;">${sch.title}</span>
@@ -961,6 +1004,7 @@ async function deleteFromMenu() {
         } catch(e) { console.error("삭제 실패:", e); }
     }
 }
+
 async function saveSchedule() {
     const globalType = document.querySelector('input[name="globalSchType"]:checked').value;
     const isHubang = globalType === '휴방';
@@ -992,6 +1036,7 @@ async function saveSchedule() {
     }
     closeScheduleModal(); render();
 }
+
 async function saveEditedSchedule() {
     if(!contextTargetId) return;
     const block = document.getElementById('editContainer').querySelector('.schedule-input-block');
@@ -1044,6 +1089,9 @@ function checkPassword() {
     const val = document.getElementById('pwInput').value; const user = adminPasswords[val]; 
     if (user) {
         isAdmin = true; loggedInUser = user;
+        sessionStorage.setItem('isAdmin', 'true');
+        sessionStorage.setItem('loggedInUser', JSON.stringify(user));
+        
         updateLoginUI(user);
         alert(`${user.name}님 환영합니다!`); document.getElementById('pwInput').value = ''; closePasswordModal();
     } else { alert('비밀번호가 틀렸습니다.'); document.getElementById('pwInput').value = ''; }
@@ -1051,6 +1099,8 @@ function checkPassword() {
 
 function logoutAdmin() {
     isAdmin = false; loggedInUser = null;
+    sessionStorage.clear(); 
+    
     const desktopContainer = document.getElementById('desktopAuthContainer');
     if(desktopContainer) desktopContainer.innerHTML = `<button class="font-paperozi bg-white border-2 border-gray-200 px-4 py-2 rounded-xl font-bold text-lg text-[#5D4037] hover:bg-[#5D4037] hover:border-[#5D4037] hover:text-white transition-all duration-200 shadow-sm" onclick="handleAdminClick()">로그인</button>`;
     const mobileContainer = document.getElementById('mobileAuthContainer');
@@ -1088,7 +1138,8 @@ function getScheduleFormHTML(data, isDeletable = true) {
     const broad = data.broadType || '개인방송'; const mem = data.memberTag || ''; const desc = data.detail || '';
     let hh = '', mm = '', ampm = '오후';
     if (data.time) { let [h, m] = data.time.split(':'); h = parseInt(h, 10); ampm = h >= 12 ? '오후' : '오전'; h = h % 12; if (h === 0) h = 12; hh = h; mm = m; }
-    const deleteBtnHtml = isDeletable ? `<button class="absolute top-2 right-2 bg-red-500 text-white w-7 h-7 rounded-full font-bold flex items-center justify-center shadow-md border-2 border-white hover:bg-red-600 transition-all z-10" onclick="this.closest('.schedule-input-block').remove()" title="일정 삭제"><i class="fi fi-sr-minus-small"></i></button>` : '';
+    
+    const deleteBtnHtml = isDeletable ? `<button type="button" class="absolute top-2 right-4 text-[#5D4037] text-[35px] font-bold flex items-center justify-center hover:scale-110 transition-all z-10" onclick="this.closest('.schedule-input-block').remove()" title="일정 삭제"><i class="fi fi-sr-minus-small"></i></button>` : '';
 
     return `
         <div class="schedule-input-block border-2 border-[#5D4037] p-5 rounded-xl bg-white relative shadow-sm pretendard mt-1">
@@ -1133,6 +1184,7 @@ function editFromMenu() {
 }
 function closeEditModal() { document.getElementById('editScheduleModal').classList.replace('flex', 'hidden'); contextTargetId = null; }
 
+// 뱃지 디자인(시간, 유형) 통일 반영
 function renderSchedulesInModal(schedules) {
     const modal = document.getElementById('scheduleDetailModal'); const modalContent = modal.querySelector('.modal-content');
     modalContent.style.backgroundColor = '#FFFDF5'; modalContent.style.padding = '12px 20px 20px 20px';
@@ -1141,7 +1193,17 @@ function renderSchedulesInModal(schedules) {
     let htmlContent = '<div class="flex flex-col w-full max-h-[65vh] overflow-y-auto px-2 pt-2 pb-4 modal-scroll">';
     schedules.forEach((sch, index) => {
         let timeText = sch.time ? formatTime12(sch.time) : ''; let broadText = sch.broadType || '개인방송'; let memText = sch.memberTag || ''; let detailText = sch.detail || '';
-        let badgeHtml = sch.globalType === '휴방' ? '' : `<div class="flex gap-2 justify-center">${timeText ? `<span class="px-4 py-1.5 bg-[#5D4037] text-white text-[13px] font-bold rounded-full shadow-sm">${timeText}</span>` : ''}<span class="px-4 py-1.5 bg-[#5D4037] text-white text-[13px] font-bold rounded-full shadow-sm">${broadText}</span></div>`;
+        
+        let themeColor = themeColors[sch.tabOrMember] || '#5D4037';
+        let isHabBang = broadText === '합방';
+        let broadColor = isHabBang ? '#d4ebce' : themeColor;
+        
+        let badgeHtml = sch.globalType === '휴방' ? '' : 
+            `<div class="flex gap-2 justify-center">
+                ${timeText ? `<span class="px-4 py-1.5 bg-white text-[13px] font-bold rounded-full shadow-sm border-2" style="color: ${themeColor}; border-color: ${themeColor};">${timeText}</span>` : ''}
+                <span class="px-4 py-1.5 bg-white text-[13px] font-bold rounded-full shadow-sm border-2" style="color: ${broadColor}; border-color: ${broadColor};">${broadText}</span>
+            </div>`;
+            
         htmlContent += `<div class="flex flex-col w-full items-center"><div class="flex flex-col items-center gap-2 mb-4 w-full"><div class="text-[28px] font-bold text-[#000] text-center leading-tight break-keep font-omudaye">${sch.title}</div>${badgeHtml}</div><div class="flex flex-col gap-5 w-full pretendard px-3">${memText ? `<div class="flex flex-col"><div class="text-[13px] text-gray-400 font-bold mb-1">멤버</div><div class="text-[17px] text-[#5D4037] font-bold">${memText}</div></div>` : ''}${detailText ? `<div class="flex flex-col"><div class="text-[13px] text-gray-400 font-bold mb-1">상세</div><div class="text-[15px] text-[#5D4037] font-medium leading-relaxed whitespace-pre-wrap">${detailText}</div></div>` : ''}</div></div>`;
         if (index < schedules.length - 1) htmlContent += `<div class="w-full border-b-2 border-dashed border-[#5D4037] opacity-20 my-8"></div>`;
     });
@@ -1161,13 +1223,18 @@ function openAllSchedulesModal(event, dateStr, member) {
 function closeDetailModal() { const modal = document.getElementById('scheduleDetailModal'); modal.classList.replace('flex', 'hidden'); modal.style.display = ''; }
 
 async function initApp() {
+    const savedAdmin = sessionStorage.getItem('isAdmin');
+    const savedUser = sessionStorage.getItem('loggedInUser');
+    
+    if (savedAdmin === 'true' && savedUser) {
+        isAdmin = true;
+        loggedInUser = JSON.parse(savedUser);
+        updateLoginUI(loggedInUser);
+    }
+
     initNaverLogin();
     await loadLinksFromFirebase();
     await loadSchedulesFromFirebase();
-    
-    if (!isMobile) {
-        openSidePanel('UP'); 
-    }
 }
 
 initApp();
