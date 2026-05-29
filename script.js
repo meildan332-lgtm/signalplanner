@@ -46,6 +46,14 @@ const memoCollectionMap = {
     '카나시': 'kanashimemo'
 };
 
+// ★ 네이버 로그인 이메일 기준 관리자 목록 (여기에 실제 네이버 이메일을 입력하세요)
+const adminAccounts = {
+    'admin1@naver.com': { name: '달타', img: 'https://stimg.sooplive.com/LOGO/da/dalta20/dalta20.jpg' },
+    'admin2@naver.com': { name: '서피카', img: 'https://stimg.sooplive.com/LOGO/sp/spica21/spica21.jpg' }
+    // ... 나머지 멤버들의 네이버 이메일 추가
+};
+
+// 기존 비밀번호 목록 (네이버 아이디가 없는 경우를 위한 대비책)
 const adminPasswords = {
     '0820': { name: '달타', img: 'https://stimg.sooplive.com/LOGO/da/dalta20/dalta20.jpg' },
     '0221': { name: '서피카', img: 'https://stimg.sooplive.com/LOGO/sp/spica21/spica21.jpg' },
@@ -53,6 +61,48 @@ const adminPasswords = {
     '1030': { name: '최또', img: 'https://stimg.sooplive.com/LOGO/ch/choiagain/choiagain.jpg' },
     '0123': { name: '카나시', img: 'https://stimg.sooplive.com/LOGO/kj/kjhh0029/kjhh0029.jpg' }
 };
+
+// ★ 네이버 로그인 초기화 설정
+const naverLogin = new naver.LoginWithNaverId({
+    clientId: "an6qp9jysDqzS6UnwJZy", // 회원님이 주신 Client ID 적용!
+    // 테스트하시는 로컬 주소나 실제 웹 주소로 반드시 변경해주세요 (예: http://127.0.0.1:5500)
+    callbackUrl: "http://127.0.0.1:5500", 
+    isPopup: false, 
+    loginButton: { color: "green", type: 3, height: 48 }
+});
+
+// 초기화 실행
+naverLogin.init();
+
+// 페이지 로드 시 네이버 로그인 상태 확인 및 콜백 처리
+window.addEventListener('load', function () {
+    naverLogin.getLoginStatus(function (status) {
+        if (status) {
+            // 로그인 성공 시 사용자 이메일 가져오기
+            const userEmail = naverLogin.user.getEmail();
+            
+            // 관리자 계정인지 확인
+            if (adminAccounts[userEmail]) {
+                isAdmin = true;
+                loggedInUser = adminAccounts[userEmail];
+                
+                const adminBtn = document.getElementById('adminMenuBtn');
+                if (adminBtn) {
+                    adminBtn.innerHTML = `
+                        <div class="flex items-center gap-2">
+                            <img src="${loggedInUser.img || 'https://via.placeholder.com/40'}" class="w-9 h-9 rounded-full object-cover border-2 border-[#5D4037]">
+                            <span class="text-lg">${loggedInUser.name}</span>
+                        </div>
+                    `;
+                }
+                closePasswordModal();
+            } else {
+                alert("관리자 권한이 없는 계정입니다.");
+                naverLogin.logout(); // 권한 없으면 강제 로그아웃
+            }
+        }
+    });
+});
 
 // 3. 파이어베이스 연동 함수들
 
@@ -319,7 +369,6 @@ function checkPassword() {
         
         const adminBtn = document.getElementById('adminMenuBtn');
         if (adminBtn) {
-            // ★ 왼쪽 프사, 오른쪽 이름 가로 정렬 처리 (크기 증가)
             adminBtn.innerHTML = `
                 <div class="flex items-center gap-2">
                     <img src="${user.img || 'https://via.placeholder.com/40'}" class="w-9 h-9 rounded-full object-cover border-2 border-[#5D4037]">
@@ -337,6 +386,7 @@ function checkPassword() {
     }
 }
 
+// ★ 네이버 로그아웃 로직 추가
 function logoutAdmin() {
     isAdmin = false;
     loggedInUser = null;
@@ -350,7 +400,12 @@ function logoutAdmin() {
         toggleMemoPanel();
     }
 
+    // 네이버 인증 토큰 로컬 스토리지에서 삭제
+    localStorage.removeItem('com.naver.nid.access_token');
+    localStorage.removeItem('com.naver.nid.oauth.state_token');
+
     alert('로그아웃 되었습니다.');
+    window.location.reload(); // 캐시 및 세션 초기화를 위해 새로고침
 }
 
 function openPasswordModal() { document.getElementById('passwordModal').classList.replace('hidden', 'flex'); }
@@ -633,9 +688,18 @@ function buildScheduleCardHtml(sch, isWeekly = false) {
 }
 
 function render() {
-    const tabBackgrounds = { '홈': '#fff5f5', '달타': '#fffdf5', '서피카': '#fef7f9', '다룽': '#f0f7ff', '최또': '#fdf5f8', '카나시': '#fffaf2' };
+    // 🔥 월간 캘린더 화면일 때 바디 배경색을 캘린더색상보다 더 연한 톤으로 변경
+    const tabBackgrounds = { 
+        '홈': '#ffdddd',   // 홈 기본 배경색 (기존 HTML과 동일)
+        '달타': '#FFFDE7', // 달타 월간 캘린더(#FFF9C4)보다 연한 톤
+        '서피카': '#FFF5F9', // 서피카 월간 캘린더(#FFDEE9)보다 연한 톤
+        '다룽': '#E3F2FD', // 다룽 월간 캘린더(#BBDEFB)보다 연한 톤
+        '최또': '#FCE4EC', // 최또 월간 캘린더(#F8BBD0)보다 연한 톤
+        '카나시': '#FFF3E0'  // 카나시 월간 캘린더(#FFE0B2)보다 연한 톤
+    };
 
-    document.documentElement.style.setProperty('--bg-cream', tabBackgrounds[currentPage] || '#ffdddd');
+    // HTML의 Tailwind 클래스(bg-[#ffdddd])보다 우선순위를 높이기 위해 JS에서 직접 body의 배경색을 변경합니다.
+    document.body.style.backgroundColor = tabBackgrounds[currentPage] || '#ffdddd';
     document.documentElement.style.setProperty('--theme-color', themeColors[currentPage]);
     
     const content = document.getElementById('mainContent'); 
