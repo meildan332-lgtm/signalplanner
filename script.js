@@ -122,7 +122,7 @@ function initNaverLogin() {
         if (typeof naver !== 'undefined') {
             const naverLogin = new naver.LoginWithNaverId({
                 clientId: "an6qp9jysDqzS6UnwJZy", 
-                callbackUrl: "https://signalcalendar.netlify.app", 
+                callbackUrl: "https://signalcalendar.netlify.app/", 
                 isPopup: false, 
                 loginButton: { color: "green", type: 3, height: 48 }
             });
