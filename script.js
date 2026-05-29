@@ -1237,6 +1237,11 @@ async function initApp() {
     initNaverLogin();
     await loadLinksFromFirebase();
     await loadSchedulesFromFirebase();
+    
+    if (!isMobile) {
+        openSidePanel('UP'); 
+    }
+    
 }
 
 initApp();
