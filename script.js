@@ -105,9 +105,8 @@ const adminAccounts = {
     'real_email3@naver.com': { name: '다룽', img: 'https://stimg.sooplive.com/LOGO/da/daarung22/daarung22.jpg' },
     'real_email4@naver.com': { name: '최또', img: 'https://stimg.sooplive.com/LOGO/ch/choiagain/choiagain.jpg' },
     'real_email5@naver.com': { name: '카나시', img: 'https://stimg.sooplive.com/LOGO/kj/kjhh0029/kjhh0029.jpg' },
-    'rnskrns@naver.com': { name: '관리자', img: 'https://via.placeholder.com/40' },
-    'hoonee4507@naver.com': { name: '관리자', img: 'https://via.placeholder.com/40' },
-    'jkolpc@naver.com': { name: '관리자', img: 'https://via.placeholder.com/40' }
+    'rnskrns@naver.com': { name: '관리자', img: 'https://i.postimg.cc/cHc39MV6/11.jpg' },
+    'jkolpc@naver.com': { name: '관리자', img: 'https://i.postimg.cc/cHc39MV6/11.jpg' }
 };
 
 const adminPasswords = {
