@@ -47,14 +47,14 @@ const memoCollectionMap = {
 };
 
 // ★ 네이버 로그인 이메일 기준 관리자 목록 (여기에 실제 네이버 이메일을 입력하세요)
-const adminAccounts = {
+const adminAccounts = { 
     'real_email1@naver.com': { name: '달타', img: 'https://stimg.sooplive.com/LOGO/da/dalta20/dalta20.jpg' },
     'real_email2@naver.com': { name: '서피카', img: 'https://stimg.sooplive.com/LOGO/sp/spica21/spica21.jpg' },
     'real_email3@naver.com': { name: '다룽', img: 'https://stimg.sooplive.com/LOGO/da/daarung22/daarung22jpg' },
     'real_email4@naver.com': { name: '최또', img: 'https://stimg.sooplive.com/LOGO/ch/choiagain/choiagain.jpg' },
     'real_email5@naver.com': { name: '카나시', img: 'https://stimg.sooplive.com/LOGO/kj/kjhh0029/kjhh0029.jpg' },
     'rnskrns@naver.com': { name: '관리자' }
-
+}
 // 기존 비밀번호 목록 (네이버 아이디가 없는 경우를 위한 대비책)
 const adminPasswords = {
     '0820': { name: '달타', img: 'https://stimg.sooplive.com/LOGO/da/dalta20/dalta20.jpg' },
