@@ -1,3 +1,29 @@
+// =========================================================================
+// 앱 아이콘(파비콘 및 애플 터치 아이콘) 동적 설정
+// =========================================================================
+function setAppIcon() {
+    const iconUrl = "https://i.postimg.cc/wjrJrQ0c/A1EAA0.png";
+    
+    // 일반 파비콘 설정
+    let linkIcon = document.querySelector("link[rel~='icon']");
+    if (!linkIcon) {
+        linkIcon = document.createElement('link');
+        linkIcon.rel = 'icon';
+        document.head.appendChild(linkIcon);
+    }
+    linkIcon.href = iconUrl;
+
+    // iOS 및 일부 안드로이드 홈 화면 아이콘 설정
+    let appleIcon = document.querySelector("link[rel='apple-touch-icon']");
+    if (!appleIcon) {
+        appleIcon = document.createElement('link');
+        appleIcon.rel = 'apple-touch-icon';
+        document.head.appendChild(appleIcon);
+    }
+    appleIcon.href = iconUrl;
+}
+setAppIcon();
+
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
 import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
 
