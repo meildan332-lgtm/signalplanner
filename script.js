@@ -66,7 +66,7 @@ const adminPasswords = {
 const naverLogin = new naver.LoginWithNaverId({
     clientId: "an6qp9jysDqzS6UnwJZy", // 회원님이 주신 Client ID 적용!
     // 테스트하시는 로컬 주소나 실제 웹 주소로 반드시 변경해주세요 (예: http://127.0.0.1:5500)
-    callbackUrl: "http://127.0.0.1:5500", 
+    callbackUrl: "https://signalcalendar.netlify.app/#", 
     isPopup: false, 
     loginButton: { color: "green", type: 3, height: 48 }
 });
