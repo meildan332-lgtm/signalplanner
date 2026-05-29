@@ -82,6 +82,10 @@ window.addEventListener('load', function () {
         if (status) {
             // 로그인 성공 시 사용자 이메일 가져오기
             const userEmail = naverLogin.user.getEmail();
+
+            console.log("===== 네이버 로그인 테스트 =====");
+            console.log("네이버가 준 이메일: ", userEmail);
+            console.log("명단에 이 이메일이 있나?: ", adminAccounts[userEmail]);
             
             // 관리자 계정인지 확인
             if (adminAccounts[userEmail]) {
